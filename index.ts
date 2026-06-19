@@ -134,7 +134,6 @@ defineVue(ListePersonnage, (vue) => {
                 width: '30%',
                 enable:"peutLancerConversation"
             })
-            
             vue.staticButton({
 
                 action: "supprimerPersonnages",
