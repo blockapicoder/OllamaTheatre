@@ -17,6 +17,7 @@ class Personnage {
 
     }
 }
+
 defineVue(Personnage, {
     kind: 'flow',
     orientation: "row",
