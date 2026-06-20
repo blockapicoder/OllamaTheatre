@@ -133,7 +133,7 @@ defineVue(ListePersonnage, (vue) => {
                 action: "ajouterPersonnage",
                 label: "Ajouter",
                 width: '30%',
-                enable:"peutLancerConversation"
+                enable: "peutLancerConversation"
             })
             vue.staticButton({
 
@@ -150,7 +150,9 @@ defineVue(ListePersonnage, (vue) => {
     vue.listOfVue({ list: "personnages", gap: 10, wrap: false, align: "center" })
     vue.bootVue({ factory: "lancerConversation", label: "titre", enable: "peutLancerConversation", width: "100%" })
 })
-
+interface Dialogue {
+    elements: string[]
+}
 class Echange {
     personnageA!: string
     afficherPersonnageA: boolean
@@ -221,11 +223,11 @@ class Conversation {
         this.personnageA = personnageA
         this.personnageB = personnageB
         this.messagesA = [
-            { role: "system", content: `tu est ${personnageA} et tu parle à  ${personnageB} , tu répond en une ligne` },
+            { role: "system", content: `tu est ${personnageA} et tu parle à  ${personnageB} , tu répond en une ligne et sans guillement` },
             { role: 'user', content: 'Bonjour' }
         ];
         this.messagesB = [
-            { role: "system", content: `tu est ${personnageB} et tu parle à  ${personnageA}, tu répond en une ligne` }
+            { role: "system", content: `tu est ${personnageB} et tu parle à  ${personnageA}, tu répond en une ligne et sans guillement` }
         ];
     }
     async faireDialogue() {
@@ -289,7 +291,19 @@ class Conversation {
         this.arreter()
     }
     titreListePersonnage = "Liste personnages"
-    
+    enregistrer() {
+        const dialogue: Dialogue = { elements: [] }
+        for (const e of this.echanges) {
+            if (e.personnageA) {
+                dialogue.elements.push(e.personnageA)
+            }
+            if (e.personnageB) {
+                dialogue.elements.push(e.personnageB)
+            }
+        }
+        client.writeFileText("dialogue.json", JSON.stringify(dialogue))
+    }
+
 
 }
 defineVue(Conversation, (vue) => {
@@ -302,10 +316,12 @@ defineVue(Conversation, (vue) => {
             width: "100%",
             gap: 10
         }, () => {
-            vue.label("personnageA", { width: "40%" })
+            vue.label("personnageA", { width: "35%" })
             vue.button({ label: "titreBouton", action: "faireAction", width: "10%" })
-            vue.bootVue({  factory:"lancerListePersonnage" , label:"titreListePersonnage",width:"10%"})
-            vue.label("personnageB", { width: "40%" })
+            vue.staticButton({ label: "Enregistrer", action: "enregistrer", width: "10%" })
+
+            vue.bootVue({ factory: "lancerListePersonnage", label: "titreListePersonnage", width: "10%" })
+            vue.label("personnageB", { width: "35%" })
         })
         vue.listOfVue({
             list: "echanges",
