@@ -32,6 +32,7 @@ defineVue(Personnage, {
 class ListePersonnage {
 
     peutLancerConversation: boolean
+    peutAjouterPersonnage:boolean
     afficherSupprimerPersonnages: boolean
     models: OllamaModel[] = []
     modelSelections: number[] = []
@@ -43,10 +44,16 @@ class ListePersonnage {
     ];
     constructor() {
         this.peutLancerConversation = false
+        this.peutAjouterPersonnage = false;
         this.afficherSupprimerPersonnages = false;
         (async () => {
-            const txt = await client.readFileText("personnages.json")
-            const r = JSON.parse(txt)
+            let r: string[] = []
+            try {
+                const txt = await client.readFileText("personnages.json")
+                r = JSON.parse(txt)
+            } catch (e) {
+
+            }
             const personnages: string[] = r;
             const tmpList: Personnage[] = []
             for (const p of personnages) {
@@ -112,6 +119,7 @@ class ListePersonnage {
             modelName = this.models[this.modelSelections[0]].name
             const n = this.personnages.filter((p) => p.estSelectionne).length
             this.peutLancerConversation = (n === 2) && !!modelName
+            this.peutAjouterPersonnage = !!modelName
         }
 
     }
@@ -133,7 +141,7 @@ defineVue(ListePersonnage, (vue) => {
                 action: "ajouterPersonnage",
                 label: "Ajouter",
                 width: '30%',
-                enable: "peutLancerConversation"
+                enable: "peutAjouterPersonnage"
             })
             vue.staticButton({
 
